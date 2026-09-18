@@ -69,6 +69,19 @@ Positions are always encoded from the perspective of the player to move (`+1`
 is "me", `-1` is the opponent, `0` empty). One table and one network therefore
 play both sides: flip the signs and it is your turn again.
 
+Both agents are **Q-learning**. They learn the same quantity, `Q(s, a)`, the
+expected return of playing action `a` in state `s`, both bootstrap with the same
+`max_a' Q(s', a')` term, and both pick a move by taking the argmax over legal
+actions. What separates them is how `Q` is stored.
+
+The easy agent keeps it in a table, so it can only answer for positions it has
+actually visited; anything unseen is a blank. The hard agent approximates it
+with a network, which generalises to positions that never came up in training.
+That approximation is also what makes the replay buffer and target network
+necessary: a table updates one entry at a time and cannot destabilise itself,
+while a network updating one state nudges its estimate for every other state at
+the same time.
+
 ### Q-learning (Easy)
 
 A dictionary from `(state, action)` to an expected return, updated with the
