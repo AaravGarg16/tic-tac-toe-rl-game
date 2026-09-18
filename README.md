@@ -227,9 +227,8 @@ serves.
 
 ## Deployment
 
-The frontend is a static bundle on **Vercel**, built from `frontend/` (see
-`frontend/vercel.json`); the
-backend runs as a container anywhere that takes a `Dockerfile`.
+The frontend is a static bundle on **Vercel**, built from `frontend/` with its
+own `vercel.json`. The backend runs as a container on **Google Cloud Run**.
 
 ```bash
 cd backend
