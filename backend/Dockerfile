@@ -15,8 +15,11 @@ RUN pip install --extra-index-url https://download.pytorch.org/whl/cpu -r requir
 COPY app ./app
 COPY rl_agents ./rl_agents
 
+# Most platforms inject the port they expect the container to listen on, so it
+# has to be read at runtime rather than baked in. The default covers local runs.
+ENV PORT=8000
 EXPOSE 8000
 
 # One worker: the model is loaded per process and a tic-tac-toe move is ~0.02 ms,
 # so extra workers only multiply the memory footprint.
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"]
