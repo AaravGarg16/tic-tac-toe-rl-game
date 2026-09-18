@@ -1,7 +1,7 @@
 """Perfect play, used as a yardstick when evaluating the learned agents.
 
-This is *not* the opponent you play against in the app -- solving tic-tac-toe
-with search would make the RL agents pointless.  It exists so the win/draw
+This is not the opponent you play against in the app. Solving tic-tac-toe
+with search would make the RL agents pointless. It exists so the win/draw
 rates reported in the README are measured against a known-optimal baseline
 rather than against a random mover, which flatters any agent.
 """
@@ -14,7 +14,7 @@ from .board import Board
 
 @lru_cache(maxsize=None)
 def _solve(cells: Tuple[int, ...]) -> Tuple[int, Tuple[int, ...]]:
-    """Return ``(value, best_actions)`` for the player to move (always ``+1``)."""
+    """Return (value, best_actions) for the player to move (always +1)."""
     board = Board(cells)
     winner = board.winner()
     if winner != 0:
@@ -38,7 +38,7 @@ def _solve(cells: Tuple[int, ...]) -> Tuple[int, Tuple[int, ...]]:
 
 
 def optimal_value(board: Board) -> int:
-    """``+1`` if the player to move wins with perfect play, ``0`` draw, ``-1`` loss."""
+    """+1 if the player to move wins with perfect play, 0 draw, -1 loss."""
     return _solve(tuple(board.cells))[0]
 
 

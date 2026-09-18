@@ -1,21 +1,16 @@
-"""Deep Q-Network agent (the "hard" opponent).
+"""DQN agent (hard mode).
 
-A small MLP approximates Q(s, .) for all nine cells at once:
+    Linear(9,128) -> ReLU -> Linear(128,64) -> ReLU -> Linear(64,9)
 
-    Linear(9 -> 128) -> ReLU -> Linear(128 -> 64) -> ReLU -> Linear(64 -> 9)
+One forward pass gives Q for all nine cells; illegal ones are masked to -inf
+before the argmax.
 
-Trained with the three ingredients that make DQN stable:
+Target: y = r + gamma * max_a' Q_target(s', a'), or just r at a terminal state.
+Replay keeps consecutive moves from dominating a gradient step, and the target
+network stops the regression target moving under us every update.
 
-* **Experience replay** -- transitions are sampled uniformly from a buffer, so
-  consecutive, highly-correlated moves do not dominate a gradient step.
-* **Target network** -- the bootstrap term uses a periodically-synced copy of
-  the weights, so the regression target does not move every step.
-* **Bellman target** -- ``y = r + gamma * max_a' Q_target(s', a')`` for
-  non-terminal transitions, ``y = r`` otherwise.
-
-As with the tabular agent, every state is stored from the perspective of the
-player to move, and ``s'`` is the position that same player faces on its next
-turn (i.e. after the opponent replies).
+Same perspective convention as the tabular agent: mover is +1, and s' is the
+board this player sees on its next turn, after the opponent replies.
 """
 
 import random
@@ -38,28 +33,28 @@ class QNetwork(nn.Module):
         self.fc3 = nn.Linear(hidden2, 9)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """``x``: float tensor of shape ``(batch, 9)`` -> Q-values ``(batch, 9)``."""
+        """x: float tensor of shape (batch, 9) -> Q-values (batch, 9)."""
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
         return self.fc3(x)
 
 
 def encode(boards) -> torch.Tensor:
-    """Encode one Board, or a sequence of them, as a ``(batch, 9)`` float tensor."""
+    """Encode one Board, or a sequence of them, as a (batch, 9) float tensor."""
     if isinstance(boards, Board):
         boards = [boards]
     return torch.tensor([b.cells for b in boards], dtype=torch.float32)
 
 
 def legal_mask(boards) -> torch.Tensor:
-    """Boolean ``(batch, 9)`` mask: ``True`` where a move is legal."""
+    """Boolean (batch, 9) mask: True where a move is legal."""
     if isinstance(boards, Board):
         boards = [boards]
     return torch.tensor([[c == 0 for c in b.cells] for b in boards], dtype=torch.bool)
 
 
 def masked_q(model: QNetwork, board: Board) -> torch.Tensor:
-    """Q-values for one board with illegal cells driven to ``-inf``."""
+    """Q-values for one board with illegal cells driven to -inf."""
     q = model(encode(board))
     return q.masked_fill(~legal_mask(board), NEG_INF)
 

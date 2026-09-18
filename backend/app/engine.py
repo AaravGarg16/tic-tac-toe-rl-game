@@ -1,7 +1,7 @@
 """Game rules for the API layer.
 
 The API is stateless: the client sends a position, the server validates it and
-answers with one move.  That means these checks are the only thing standing
+answers with one move. That means these checks are the only thing standing
 between a hand-crafted request and a nonsense board, so they are strict.
 """
 
@@ -31,7 +31,7 @@ def legal_moves(board: Sequence[str]) -> List[int]:
 
 
 def winner(board: Sequence[str]) -> Optional[str]:
-    """``"X"``, ``"O"``, ``"draw"``, or ``None`` if the game is still running."""
+    """"X", "O", "draw", or None if the game is still running."""
     for a, b, c in LINES:
         if board[a] != EMPTY and board[a] == board[b] == board[c]:
             return board[a]
@@ -47,7 +47,7 @@ def winning_line(board: Sequence[str]) -> Optional[tuple]:
 
 
 def validate(board: Sequence[str], to_move: str) -> None:
-    """Raise ``InvalidBoard`` unless it really is ``to_move``'s turn here."""
+    """Raise InvalidBoard unless it really is to_move's turn here."""
     if len(board) != 9:
         raise InvalidBoard("board must have exactly 9 cells")
     if any(c not in (EMPTY, "X", "O") for c in board):
@@ -69,7 +69,7 @@ def validate(board: Sequence[str], to_move: str) -> None:
 
 
 def to_relative(board: Sequence[str], mark: str) -> List[int]:
-    """Encode the board as ``+1`` for ``mark``, ``-1`` for the opponent, ``0`` empty.
+    """Encode the board as +1 for mark, -1 for the opponent, 0 empty.
 
     This is the representation both agents were trained on, so the network and
     the Q-table always see a position as "mine to move".

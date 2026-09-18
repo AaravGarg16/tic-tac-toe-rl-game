@@ -17,7 +17,7 @@ export class ApiError extends Error {}
  *
  * `AbortSignal.any` would do this in one line but is not available everywhere
  * the tests run, and forwarding the caller's signal alone would silently drop
- * the timeout -- leaving a hung request spinning forever.
+ * the timeout, leaving a hung request spinning forever.
  */
 function deadline(callerSignal, ms) {
   const controller = new AbortController();
@@ -84,7 +84,7 @@ export function requestMove(board, aiMark, difficulty, options) {
  *
  * Called as soon as the page mounts so a sleeping container starts waking while
  * you are still picking a mark and a difficulty, instead of after your first
- * click. Failures are ignored on purpose -- this is a warm-up, not a gate.
+ * click. Failures are ignored on purpose: it is a warm-up, not a gate.
  */
 export function warmUp() {
   const budget = deadline(null, REQUEST_TIMEOUT_MS);

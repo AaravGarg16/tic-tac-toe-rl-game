@@ -1,7 +1,7 @@
 """Board representation shared by both agents.
 
-Cells hold ``+1`` (the agent to move, by convention), ``-1`` (its opponent) or
-``0`` (empty).  Keeping the board sign-relative rather than X/O-relative means a
+Cells hold +1 (the agent to move, by convention), -1 (its opponent) or
+0 (empty). Keeping the board sign-relative rather than X/O-relative means a
 single network can play both sides: flip the signs and the position is simply
 "mine to move" again.
 """
@@ -24,7 +24,7 @@ class Board:
             raise ValueError("a board has exactly 9 cells")
 
     def __str__(self) -> str:
-        """Compact state key, e.g. ``"10-1000000"``. Used as the Q-table key."""
+        """Compact state key, e.g. "10-1000000". Used as the Q-table key."""
         return "".join(str(c) for c in self.cells)
 
     def __repr__(self) -> str:
@@ -37,7 +37,7 @@ class Board:
         return 0 <= idx < 9 and self.cells[idx] == 0
 
     def play(self, idx: int, player: int) -> "Board":
-        """Return a new board with ``player`` placed at ``idx``."""
+        """Return a new board with player placed at idx."""
         if not self.is_legal(idx):
             raise ValueError(f"illegal move: {idx}")
         nxt = self.cells[:]
@@ -48,7 +48,7 @@ class Board:
         return 0 not in self.cells
 
     def winner(self) -> int:
-        """``+1``/``-1`` for a won line, ``0`` for no winner yet."""
+        """+1/-1 for a won line, 0 for no winner yet."""
         c = self.cells
         for a, b, d in LINES:
             if c[a] != 0 and c[a] == c[b] == c[d]:

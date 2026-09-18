@@ -1,14 +1,13 @@
-"""Tabular Q-learning agent (the "easy" opponent).
-
-Classic Q-learning with Bellman bootstrapping:
+"""Tabular Q-learning agent (easy mode).
 
     Q(s, a) <- Q(s, a) + alpha * [ r + gamma * max_a' Q(s', a') - Q(s, a) ]
 
-States are stored from the perspective of the player to move (that player is
-always ``+1``), so a single table serves both sides of a self-play game.  ``s'``
-is the position the agent faces on its *next* turn, i.e. after the opponent has
-replied -- bootstrapping from the position right after our own move would value
-a board the opponent is about to act on.
+States are keyed from the mover's perspective (mover is always +1), so one
+table serves both sides of a self-play game.
+
+Note s' is the board we face on our next turn, after the opponent replies,
+not the one right after our own move. Bootstrapping from that would be valuing
+a position the opponent is about to act on.
 """
 
 import random
@@ -42,7 +41,7 @@ class QLearningAgent:
         return max(self.value(state, m) for m in moves)
 
     def select_move(self, board: Board, epsilon: float = 0.0) -> Optional[int]:
-        """Epsilon-greedy over the legal moves of a board seen as ``+1`` to move."""
+        """Epsilon-greedy over the legal moves of a board seen as +1 to move."""
         moves = board.legal_moves()
         if not moves:
             return None
@@ -85,8 +84,8 @@ def play_self_play_episode(agent: QLearningAgent, epsilon: float) -> int:
     """Play one self-play game, updating Q as it goes. Returns the winner (+1/-1/0).
 
     Both sides share the table; each turn the board is flipped so the mover is
-    ``+1``.  A transition is only closed out once the same side is on move
-    again, which is what makes ``s'`` the correct next state.
+    +1. A transition is only closed out once the same side is on move
+    again, which is what makes s' the correct next state.
     """
     board = Board()
     player = 1

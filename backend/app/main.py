@@ -1,7 +1,7 @@
 """FastAPI service exposing the trained agents.
 
 The API is **stateless**: a request carries the whole position and the response
-carries the agent's reply.  A tic-tac-toe board is nine bytes, so there is
+carries the agent's reply. A tic-tac-toe board is nine bytes, so there is
 nothing worth storing server-side, and no session state to lose when a
 container restarts or to shard when it runs behind several workers.
 """

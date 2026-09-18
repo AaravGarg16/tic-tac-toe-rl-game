@@ -18,7 +18,7 @@ export default function App() {
   const [started, setStarted] = useState(false);
   const [thinking, setThinking] = useState(false);
   // True from the moment we ask the agent until its reply lands. It stays true
-  // after a failed request, because the agent still owes us a move -- without
+  // after a failed request, because the agent still owes us a move. Without
   // it you could click again and put two of your marks on the board in a row.
   const [owed, setOwed] = useState(false);
   const [slow, setSlow] = useState(false);

@@ -4,7 +4,7 @@
     python train.py --quick         # short run, for smoke-testing the pipeline
     python train.py --agent dqn     # retrain just one of them
 
-Artifacts land in ``rl_agents/artifacts/`` and are what the API serves.
+Artifacts land in rl_agents/artifacts/ and are what the API serves.
 """
 
 import argparse
@@ -38,7 +38,7 @@ DQN_PATH = Path(os.getenv("DQN_WEIGHTS", ARTIFACTS / "dqn.pt"))
 # ---------------------------------------------------------------------------
 
 def _play_match(policy, opponent, agent_first: bool) -> int:
-    """Play one game. ``policy``/``opponent`` map a +1-perspective Board to a move."""
+    """Play one game. policy/opponent map a +1-perspective Board to a move."""
     board = Board()
     agent_side = 1 if agent_first else -1
     player = 1
@@ -305,7 +305,7 @@ def _collect_episode(
 ) -> None:
     """Play one self-play game and push its transitions into the replay buffer.
 
-    ``seed_position`` optionally starts the game from a mid-game position
+    seed_position optionally starts the game from a mid-game position
     (mover as +1) rather than from the empty board.
     """
     board = Board(seed_position) if seed_position is not None else Board()
