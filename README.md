@@ -227,7 +227,8 @@ serves.
 
 ## Deployment
 
-The frontend is a static bundle on **Vercel** (`vercel.json` builds it); the
+The frontend is a static bundle on **Vercel**, built from `frontend/` (see
+`frontend/vercel.json`); the
 backend runs as a container anywhere that takes a `Dockerfile`.
 
 ```bash
