@@ -4,6 +4,8 @@ Play tic-tac-toe against two reinforcement-learning agents, a tabular
 Q-learning agent and a Deep Q-Network, both trained from scratch by self-play
 with no game-tree search and no hand-written strategy.
 
+### [▶ Play it live](https://tic-tac-toe-rl-game.vercel.app)
+
 **React · FastAPI · PyTorch**
 
 [![CI](https://github.com/AaravGarg16/tic-tac-toe-rl-game/actions/workflows/ci.yml/badge.svg)](https://github.com/AaravGarg16/tic-tac-toe-rl-game/actions/workflows/ci.yml)
@@ -126,7 +128,7 @@ win already on the board always outranks a slower one.
 
 ## Design notes
 
-A tic-tac-toe move is 0.022 ms of computation and a network round trip is
+A tic-tac-toe move is 0.02 ms of computation and a network round trip is
 several hundred times that, so the interesting latency work is in removing
 round trips rather than in the model.
 
@@ -227,8 +229,24 @@ serves.
 
 ## Deployment
 
-The frontend is a static bundle on **Vercel**, built from `frontend/` with its
-own `vercel.json`. The backend runs as a container on **Google Cloud Run**.
+| Piece | Host | Notes |
+|-------|------|-------|
+| Frontend | **Vercel** | static Vite bundle built from `frontend/` |
+| Backend | **Google Cloud Run** (`us-west2`) | container, scales to zero |
+
+Cloud Run scales to zero, so an idle service costs nothing. The container reads
+the port the platform supplies rather than binding a fixed one, and reaches a
+serving state in about a second once its image is cached. The client pings
+`/health` on page load, so a service that has scaled to zero wakes while you are
+still choosing a mark.
+
+The image installs the CPU-only PyTorch wheel (`torch==2.8.0+cpu`). The default
+pulls in the whole CUDA stack, which buys nothing for a 9-input network and
+costs minutes of cold start. It still lands at about 1 GB, most of it PyTorch
+itself. The container holds 154 MB resident and the agents load in roughly
+400 ms at startup.
+
+To run the same image locally:
 
 ```bash
 cd backend
@@ -236,17 +254,9 @@ docker build -t ttt-rl .
 docker run -p 8000:8000 ttt-rl
 ```
 
-The image installs the CPU-only PyTorch wheel (`torch==2.8.0+cpu`). The
-default pulls in the whole CUDA stack, which buys nothing for a 9-input network
-and costs minutes of cold start. It still lands at about 1 GB, most of it
-PyTorch itself; the agents load in roughly 400 ms once the container is up.
-
 Two environment variables:
 
 | Where | Variable | Value |
 |-------|----------|-------|
-| Vercel | `VITE_API_URL` | the backend's public URL |
-| Backend | `ALLOWED_ORIGINS` | the Vercel URL, comma-separated for several (defaults to `*`) |
-
-Because cold starts dominate the remaining latency, a host that keeps the
-container warm makes far more difference than any further code change.
+| Vercel | `VITE_API_URL` | the Cloud Run service URL |
+| Cloud Run | `ALLOWED_ORIGINS` | the Vercel URL, comma-separated for several (defaults to `*`) |
